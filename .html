@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>To-Do List App</title>
+
+  <!-- Step 1: Add some basic styling to make the app look clean -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .delete {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Step 2: Create a container for the To-Do App -->
+  <div class="container">
+    <h2>📝 To-Do List</h2>
+
+    <!-- Step 3: Input for entering tasks -->
+    <input type="text" id="taskInput" placeholder="Enter a new task" />
+
+    <!-- Step 4: Button to add task -->
+    <button onclick="addTask()">Add Task</button>
+
+    <!-- Step 5: List where tasks will appear -->
+    <ul id="taskList"></ul>
+  </div>
+
+  <!-- Step 6: JavaScript logic to handle tasks -->
+  <script>
+    // Load saved tasks from localStorage on page load
+    window.onload = function () {
+      loadTasks();
+    };
+
+    // Step 7: Add a new task
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const taskText = taskInput.value.trim();
+
+      if (taskText === "") {
+        alert("Please enter a task!");
+        return;
+      }
+
+      // Create task object
+      const task = {
+        text: taskText,
+        completed: false
+      };
+
+      // Save task to localStorage
+      let tasks = getTasksFromStorage();
+      tasks.push(task);
+      saveTasksToStorage(tasks);
+
+      // Update the task list display
+      taskInput.value = "";
+      renderTasks();
+    }
+
+    // Step 8: Render tasks from localStorage
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      const tasks = getTasksFromStorage();
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.className = task.completed ? "completed" : "";
+
+        // Task text click toggles completion
+        li.innerHTML = `
+          <span onclick="toggleComplete(${index})" style="cursor:pointer;">${task.text}</span>
+          <button class="delete" onclick="deleteTask(${index})">Delete</button>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    // Step 9: Toggle task complete/incomplete
+    function toggleComplete(index) {
+      let tasks = getTasksFromStorage();
+      tasks[index].completed = !tasks[index].completed;
+      saveTasksToStorage(tasks);
+      renderTasks();
+    }
+
+    // Step 10: Delete a task
+    function deleteTask(index) {
+      let tasks = getTasksFromStorage();
+      tasks.splice(index, 1);
+      saveTasksToStorage(tasks);
+      renderTasks();
+    }
+
+    // Step 11: Helpers for localStorage
+    function getTasksFromStorage() {
+      return JSON.parse(localStorage.getItem("tasks")) || [];
+    }
+
+    function saveTasksToStorage(tasks) {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Step 12: Initial render
+    function loadTasks() {
+      renderTasks();
+    }
+  </script>
+</body>
+</html>
